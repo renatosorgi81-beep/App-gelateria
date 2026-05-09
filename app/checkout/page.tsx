@@ -24,8 +24,12 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  if (items.length === 0) {
+  if (items.length === 0 && typeof window !== 'undefined') {
     router.replace('/cart');
+    return null;
+  }
+
+  if (items.length === 0) {
     return null;
   }
 

@@ -11,9 +11,9 @@ export function formatPrice(amount: number): string {
 
 export function isBusinessOpen(): boolean {
   const now = new Date();
-  const day = now.getDay();
+  const day = now.getDay() as 0 | 1 | 2 | 3 | 4 | 5 | 6;
   const { days, openTime, closeTime } = BUSINESS_CONFIG.openHours;
-  if (!days.includes(day)) return false;
+  if (!(days as readonly number[]).includes(day)) return false;
   const [openH, openM] = openTime.split(':').map(Number);
   const [closeH, closeM] = closeTime.split(':').map(Number);
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
