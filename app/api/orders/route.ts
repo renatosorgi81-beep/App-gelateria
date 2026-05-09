@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { generateOrderNumber } from '@/lib/constants';
+import { sendOrderNotifications } from '@/lib/notifications';
 import type { CartItem, CheckoutData } from '@/types';
 
 // GET — fetch a single order by orderNumber + phone (for tracking)
@@ -116,6 +117,15 @@ export async function POST(request: NextRequest) {
       console.error('Error inserting order items:', itemsError);
       // Order was created but items failed — log but don't fail the response
     }
+
+    // Send notifications (Telegram + Email) — non-blocking, errors are logged not thrown
+    sendOrderNotifications({
+      orderNumber,
+      checkoutData,
+      items,
+      total,
+      deliveryFee,
+    }).catch((err) => console.error('Notification error:', err));
 
     const order = mapOrderRow(orderData);
     return NextResponse.json({ order }, { status: 201 });
